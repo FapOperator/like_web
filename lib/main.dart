@@ -1,125 +1,103 @@
-import 'package:like_web/feed_player/feed_player.dart';
-import 'package:like_web/web_video_player/web_video_player.dart';
-import 'package:flutter/foundation.dart';
-
+import 'package:flick_video_player/flick_video_player.dart';
 import 'package:flutter/material.dart';
+import 'package:like_web/custom_dialog.dart';
+import 'package:like_web/utils/mock_data.dart';
+import 'package:like_web/web_video_player/web_video_player.dart';
+import 'package:overlay_support/overlay_support.dart';
+import 'package:provider/provider.dart';
+import 'package:timer_count_down/timer_controller.dart';
+import 'package:timer_count_down/timer_count_down.dart';
 
-import './landscape_player/landscape_player.dart';
-
-import 'default_player/default_player.dart';
-
-void main() => runApp(MyApp());
+void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flick player like_web',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: Scaffold(
-        backgroundColor: Color.fromRGBO(246, 245, 250, 1),
-        body: SafeArea(child: like_webs()),
-      ),
-    );
-  }
-}
-
-class like_webs extends StatefulWidget {
-  const like_webs({Key? key}) : super(key: key);
-
-  @override
-  _like_websState createState() => _like_websState();
-}
-
-class _like_websState extends State<like_webs> {
-  final List<Map<String, dynamic>> samples = [
-    {'name': 'Default player', 'widget': DefaultPlayer()},
-    {'name': 'Feed player', 'widget': Expanded(child: FeedPlayer())},
-    {'name': 'Landscape player', 'widget': LandscapePlayer()},
-  ];
-
-  int selectedIndex = 0;
-
-  changeSample(int index) {
-    if (samples[index]['widget'] is LandscapePlayer) {
-      Navigator.of(context).push(MaterialPageRoute(
-        builder: (context) => LandscapePlayer(),
-      ));
-    } else {
-      setState(() {
-        selectedIndex = index;
-      });
-    }
-  }
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return kIsWeb ? _buildWebView() : _buildMobileView();
-  }
-
-  Widget _buildWebView() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: <Widget>[
-        Expanded(child: WebVideoPlayer()),
-        Container(
-          child: Padding(
-            padding: const EdgeInsets.all(15.0),
-            child: Text('Flick video player',
-                style: TextStyle(
-                  color: Color.fromRGBO(100, 109, 236, 1),
-                  fontWeight: FontWeight.bold,
-                )),
-          ),
-        )
-      ],
-    );
-  }
-
-  Widget _buildMobileView() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: <Widget>[
-        Container(
-          child: samples[selectedIndex]['widget'],
+    return OverlaySupport.global(
+      child: MaterialApp(
+        // remove the debug banner
+        debugShowCheckedModeBanner: false,
+        title: 'KindaCode.com',
+        theme: ThemeData(
+          primarySwatch: Colors.amber,
         ),
-        Container(
-          height: 80,
-          decoration: BoxDecoration(
-            color: Colors.white,
-          ),
-          child: ListView(
-              scrollDirection: Axis.horizontal,
-              children: samples.asMap().keys.map((index) {
-                return Material(
-                  color: Colors.transparent,
-                  child: InkWell(
-                    onTap: () {
-                      changeSample(index);
+        home: const HomeScreen(),
+      ),
+    );
+  }
+}
+
+// This is the main screen of the application
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({Key? key}) : super(key: key);
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  CountdownController _controller = CountdownController();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Player')),
+      body: Column(
+        children: [
+          Expanded(child: WebVideoPlayer()),
+          Row(
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 15.0),
+                child: ElevatedButton(
+                    onPressed: () {
+                      _controller.start();
                     },
-                    child: Center(
-                      child: Container(
-                        padding: EdgeInsets.all(20),
-                        child: Text(
-                          samples.asMap()[index]?['name'],
-                          style: TextStyle(
-                            color: index == selectedIndex
-                                ? Color.fromRGBO(100, 109, 236, 1)
-                                : Color.fromRGBO(173, 176, 183, 1),
-                            fontWeight:
-                                index == selectedIndex ? FontWeight.bold : null,
-                          ),
-                        ),
-                      ),
-                    ),
+                    child: Text('Демо уведомление')),
+              ),
+              Countdown(
+                controller: _controller,
+                seconds: 5,
+                build: (_, double time) => Text(
+                  ' Уведомление будет показано через ${time.toString()} сек.',
+                  style: TextStyle(
+                    fontSize: 16,
                   ),
-                );
-              }).toList()),
-        ),
-      ],
+                ),
+                interval: Duration(milliseconds: 100),
+                onFinished: () {
+                  showSimpleNotification(
+                      CustomDialogBox(
+                        title: "Демо уведомление",
+                        descriptions:
+                            "Привет. Я демо уведомление которое всплывает по центру экрана устройства",
+                        text: "Спасибо",
+                      ),
+                      duration: Duration(seconds: 4),
+                      background: Colors.transparent
+                      // Text("this is a message from simple notification"),
+                      );
+                  _controller.restart();
+                  _controller.pause();
+                  // _showModal(context);
+                  // showDialog(
+                  //     context: context,
+                  //     builder: (BuildContext context) {
+                  //       return CustomDialogBox(
+                  //         title: "Демо уведомление",
+                  //         descriptions:
+                  //             "Привет. Я демо уведомление которое всплывает по центру экрана устройства",
+                  //         text: "Спасибо",
+                  //       );
+                  //     });
+                },
+              ),
+            ],
+          )
+        ],
+      ),
     );
   }
 }

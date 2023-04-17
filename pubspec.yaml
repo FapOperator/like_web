@@ -37,6 +37,8 @@ dependencies:
   cupertino_icons: ^1.0.2
   visibility_detector: ^0.3.0
   flick_video_player: ^0.5.0
+  timer_count_down: ^2.2.2
+  overlay_support: ^2.1.0
   
 
 dev_dependencies:
