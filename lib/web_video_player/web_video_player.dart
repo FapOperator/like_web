@@ -8,7 +8,8 @@ import 'package:video_player/video_player.dart';
 import 'data_manager.dart';
 
 class WebVideoPlayer extends StatefulWidget {
-  WebVideoPlayer({Key? key}) : super(key: key);
+  final String url;
+  WebVideoPlayer({Key? key, required this.url}) : super(key: key);
 
   @override
   _WebVideoPlayerState createState() => _WebVideoPlayerState();
@@ -22,8 +23,7 @@ class _WebVideoPlayerState extends State<WebVideoPlayer> {
   void initState() {
     super.initState();
     flickManager = FlickManager(
-      videoPlayerController:
-          VideoPlayerController.network(mockData["items"][1]["trailer_url"]),
+      videoPlayerController: VideoPlayerController.network(widget.url),
     );
     List<String> urls = (mockData["items"] as List)
         .map<String>((item) => item["trailer_url"])
