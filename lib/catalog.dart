@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:like_web/custom_dialog.dart';
 import 'package:like_web/main.dart';
 import 'package:like_web/utils/mock_data.dart';

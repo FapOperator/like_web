@@ -44,7 +44,8 @@ class LandscapePlayToggle extends StatelessWidget {
         key: key,
         onTap: () {
           videoManager.isVideoEnded
-              ? controlManager.replay()
+              // ? controlManager.replay()
+              ? Navigator.of(context).pop()
               : controlManager.togglePlay();
         },
         child: Container(

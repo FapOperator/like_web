@@ -47,25 +47,45 @@ class _WebVideoPlayerState extends State<WebVideoPlayer> {
           flickManager.flickControlManager?.autoPause();
         } else if (visibility.visibleFraction == 1) {
           flickManager.flickControlManager?.autoResume();
+          flickManager.flickVideoManager!.isVideoEnded;
         }
       },
-      child: Container(
-        child: FlickVideoPlayer(
-          flickManager: flickManager,
-          flickVideoWithControls: FlickVideoWithControls(
-            controls: WebVideoControl(
-              dataManager: dataManager!,
-              iconSize: 30,
-              fontSize: 14,
-              progressBarSettings: FlickProgressBarSettings(
-                height: 5,
-                handleRadius: 5.5,
+      child: Stack(
+        children: [
+          Container(
+            child: FlickVideoPlayer(
+              flickManager: flickManager,
+              flickVideoWithControls: FlickVideoWithControls(
+                controls: WebVideoControl(
+                  dataManager: dataManager!,
+                  iconSize: 30,
+                  fontSize: 14,
+                  progressBarSettings: FlickProgressBarSettings(
+                    height: 5,
+                    handleRadius: 5.5,
+                  ),
+                ),
+                videoFit: BoxFit.contain,
+                // aspectRatioWhenLoading: 4 / 3,
               ),
             ),
-            videoFit: BoxFit.contain,
-            // aspectRatioWhenLoading: 4 / 3,
           ),
-        ),
+          Positioned(
+            left: 10,
+            top: 0,
+            child: Container(
+                alignment: Alignment.center,
+                padding: EdgeInsets.only(
+                  top: 20,
+                ),
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('Назад'),
+                )),
+          ),
+        ],
       ),
     );
   }
